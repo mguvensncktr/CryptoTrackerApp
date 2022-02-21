@@ -7,13 +7,13 @@ const CoinItem = ({ marketCoin }) => {
 
     const formatMarketCap = (marketCap) => {
         if (marketCap > 1000000000000) {
-            return (marketCap / 1000000000000).toFixed(2) + 'T'
+            return (marketCap / 1000000000000).toFixed(2) + ' ' + 'T'
         } else if (marketCap > 1000000000) {
-            return (marketCap / 1000000000).toFixed(2) + 'B'
+            return (marketCap / 1000000000).toFixed(2) + ' ' + 'B'
         } else if (marketCap > 1000000) {
-            return (marketCap / 1000000).toFixed(2) + 'M'
+            return (marketCap / 1000000).toFixed(2) + ' ' + 'M'
         } else {
-            return (marketCap / 1000).toFixed(2) + 'K'
+            return (marketCap / 1000).toFixed(2) + ' ' + 'K'
         }
     }
 
