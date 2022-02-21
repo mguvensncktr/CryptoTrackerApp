@@ -100,13 +100,13 @@ const DetailScreen = () => {
                     <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', marginLeft: 5 }}>{symbol?.toUpperCase()}</Text>
                     <View
                         style={{
-                            width: 20,
-                            height: 20,
                             borderRadius: 5,
                             alignItems: 'center',
                             justifyContent: 'center',
                             backgroundColor: 'grey',
-                            marginLeft: 5
+                            marginLeft: 5,
+                            paddingHorizontal: 3,
+                            paddingVertical: 1
                         }}
                     >
                         <Text style={{ color: 'white', fontWeight: 'bold' }}>#{market_cap_rank}</Text>
@@ -209,7 +209,7 @@ const DetailScreen = () => {
                         }}>
                         {price}
                     </Text>
-                    <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold' }}>USD</Text>
+                    <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold' }}>$</Text>
                 </View>
             </View>
         )

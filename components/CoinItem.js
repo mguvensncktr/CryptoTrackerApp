@@ -33,7 +33,7 @@ const CoinItem = ({ marketCoin }) => {
                 borderBottomColor: '#282828',
                 paddingVertical: 10
             }}
-            onPress={() => navigation.navigate("Detail", { coinId: marketCoin.id })}
+            onPress={() => navigation.navigate("Detail", { coinId: marketCoin?.id })}
         >
             <View
                 style={{
