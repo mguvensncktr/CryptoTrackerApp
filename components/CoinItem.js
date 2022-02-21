@@ -17,6 +17,9 @@ const CoinItem = ({ marketCoin }) => {
         }
     }
 
+    const priceColor = marketCoin?.price_change_percentage_24h > 0 ? '#16c784' : '#ea3943'
+    const priceImage = marketCoin?.price_change_percentage_24h > 0 ? 'caretup' : 'caretdown'
+
     return (
         <View
             style={{
@@ -83,8 +86,8 @@ const CoinItem = ({ marketCoin }) => {
                                 alignItems: 'center',
                             }}
                         >
-                            <AntDesign name="caretdown" size={14} color={'red'} />
-                            <Text style={{ color: 'white', fontSize: 14, marginLeft: 5 }}>{marketCoin?.price_change_percentage_24h.toFixed(2)} %</Text>
+                            <AntDesign name={priceImage} size={14} color={priceColor} />
+                            <Text style={{ color: priceColor, fontSize: 14, marginLeft: 5 }}>{marketCoin.price_change_percentage_24h.toFixed(2)} %</Text>
                         </View>
                     </View>
                 </View>
