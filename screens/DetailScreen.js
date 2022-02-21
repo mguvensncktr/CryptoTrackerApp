@@ -178,7 +178,7 @@ const DetailScreen = () => {
 
     return (
         <View
-            style={{ flex: 1 }}
+            style={{ flex: 1, backgroundColor: '#121212', paddingTop: 20 }}
         >
             <ChartPathProvider data={{ points: prices.map(([x, y]) => ({ x, y })), smoothingStrategy: 'bezier' }}>
                 {renderHeader()}
