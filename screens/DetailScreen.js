@@ -1,5 +1,5 @@
-import { View, Text, Image, Dimensions } from 'react-native'
-import React from 'react'
+import { View, Text, Image, Dimensions, TextInput, KeyboardAvoidingView, Platform } from 'react-native'
+import React, { useState } from 'react'
 import { Ionicons, EvilIcons, AntDesign } from '@expo/vector-icons';
 import coin from '../assets/data/crypto.json';
 import { ChartDot, ChartPath, ChartPathProvider, ChartYLabel } from '@rainbow-me/animated-charts';
@@ -20,9 +20,8 @@ const DetailScreen = () => {
     }
         = coin;
 
-    const formatPrice = (price) => {
-        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
+    const [value, setValue] = useState("1");
+    const [price, setPrice] = useState(current_price.usd.toString());
 
     const formatCurrency = (value) => {
         "worklet";
@@ -30,6 +29,12 @@ const DetailScreen = () => {
             return `${current_price.usd.toFixed(2)} US $`
         }
         return `${parseFloat(value).toFixed(2)} US $`
+    }
+
+    const handleChange = (value) => {
+        "worklet";
+        setValue(value);
+        setPrice(value * current_price.usd);
     }
 
     const priceColor = price_change_percentage_24h > 0 ? '#16c784' : '#ea3943'
@@ -113,13 +118,72 @@ const DetailScreen = () => {
         )
     }
 
+    function renderConverter() {
+        return (
+            <View
+                style={{
+                    flexDirection: 'row',
+                    padding: 15,
+                    alignItems: 'center'
+                }}
+            >
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        flex: 1,
+                        alignItems: 'center'
+                    }}
+                >
+                    <TextInput
+                        style={{
+                            flex: 1,
+                            color: 'white',
+                            height: 30,
+                            margin: 12,
+                            borderBottomWidth: 1,
+                            borderBottomColor: 'white',
+                            fontSize: 16
+                        }}
+                        keyboardType='numbers-and-punctuation'
+                        value={value}
+                        onChangeText={handleChange}
+                    />
+                    <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{symbol.toUpperCase()}</Text>
+                </View>
+                <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold', marginHorizontal: 15 }}>=</Text>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        flex: 1,
+                        alignItems: 'center'
+                    }}
+                >
+                    <Text
+                        style={{
+                            flex: 1,
+                            color: 'white',
+                            height: 30,
+                            margin: 12,
+                            borderBottomWidth: 1,
+                            borderBottomColor: 'white',
+                            fontSize: 20
+                        }}>
+                        {price}
+                    </Text>
+                    <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>USD</Text>
+                </View>
+            </View>
+        )
+    }
 
     return (
-        <View style={{ flex: 1 }}>
+        <View
+            style={{ flex: 1 }}
+        >
             <ChartPathProvider data={{ points: prices.map(([x, y]) => ({ x, y })), smoothingStrategy: 'bezier' }}>
                 {renderHeader()}
                 {renderCoinInfo()}
-                <View style={{ flex: 1 }}>
+                <View>
                     <ChartPath
                         height={SIZE / 2}
                         stroke={chartColor}
@@ -127,6 +191,7 @@ const DetailScreen = () => {
                     />
                     <ChartDot style={{ backgroundColor: chartColor }} />
                 </View>
+                {renderConverter()}
             </ChartPathProvider>
         </View>
     )
