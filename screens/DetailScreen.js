@@ -1,12 +1,14 @@
 import { View, Text, Image, Dimensions, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { Ionicons, EvilIcons, AntDesign } from '@expo/vector-icons';
+import { Ionicons, AntDesign, FontAwesome } from '@expo/vector-icons';
 import { ChartDot, ChartPath, ChartPathProvider, ChartYLabel } from '@rainbow-me/animated-charts';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getSingleCoinData, getSingleCoinMarketChart } from '../services/api';
+import { useWatchListContext } from '../context/WatchlistContext';
 
 const DetailScreen = () => {
 
+    const { watchListCoinId, addCoinToWatchList, removeCoinFromWatchList } = useWatchListContext();
     const [coin, setCoin] = useState(null);
     const [chartData, setChartData] = useState(null);
     const route = useRoute();
@@ -36,6 +38,7 @@ const DetailScreen = () => {
     }
 
     const { image: { small },
+        id,
         symbol,
         name,
         market_data: {
@@ -68,6 +71,19 @@ const DetailScreen = () => {
     const priceImage = price_change_percentage_24h > 0 ? 'caretup' : 'caretdown'
     const chartColor = current_price?.usd > prices[0][1] ? "#16c784" : "#ea3943"
     const { width: SIZE } = Dimensions.get('window');
+
+    const watchlistedCoin = () => {
+        return watchListCoinId.some((coinId) => coinId === id);
+    }
+
+    const handleAddCoinToWatchList = () => {
+        if (watchlistedCoin()) {
+            removeCoinFromWatchList(id);
+        }
+        else {
+            addCoinToWatchList(id);
+        }
+    }
 
     function renderHeader() {
         return (
@@ -112,7 +128,12 @@ const DetailScreen = () => {
                         <Text style={{ color: 'white', fontWeight: 'bold' }}>#{market_cap_rank}</Text>
                     </View>
                 </View>
-                <EvilIcons name="user" size={30} color="white" />
+                <FontAwesome
+                    name={watchlistedCoin() ? "star" : "star-o"}
+                    size={30}
+                    color={watchlistedCoin() ? '#FFBF00' : 'white'}
+                    onPress={handleAddCoinToWatchList}
+                />
             </View>
         )
     }
