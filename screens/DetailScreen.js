@@ -1,0 +1,59 @@
+import { View, Text, Image } from 'react-native'
+import React from 'react'
+import { Ionicons, EvilIcons } from '@expo/vector-icons';
+
+import coin from '../assets/data/crypto.json';
+
+const DetailScreen = () => {
+    const { image: { small },
+        name,
+        symbol,
+        market_data: { market_cap_rank },
+    }
+        = coin;
+
+    function renderHeader() {
+        return (
+            <View
+                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10 }}
+            >
+                <Ionicons name="chevron-back-sharp" size={30} color="white" />
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Image
+                        source={{ uri: small }}
+                        resizeMode="contain"
+                        style={{ width: 25, height: 25 }}
+                    />
+                    <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', marginLeft: 5 }}>{symbol.toUpperCase()}</Text>
+                    <View
+                        style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: 5,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: 'grey',
+                            marginLeft: 5
+                        }}
+                    >
+                        <Text style={{ color: 'white', fontWeight: 'bold' }}>#{market_cap_rank}</Text>
+                    </View>
+                </View>
+                <EvilIcons name="user" size={30} color="white" />
+            </View>
+        )
+    }
+
+    return (
+        <View style={{ flex: 1 }}>
+            {renderHeader()}
+        </View>
+    )
+}
+
+export default DetailScreen
