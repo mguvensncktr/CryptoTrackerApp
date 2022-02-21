@@ -1,9 +1,11 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { AntDesign } from '@expo/vector-icons'
-
+import { useNavigation } from '@react-navigation/native'
 
 const CoinItem = ({ marketCoin }) => {
+
+    const navigation = useNavigation()
 
     const formatMarketCap = (marketCap) => {
         if (marketCap > 1000000000000) {
@@ -21,7 +23,7 @@ const CoinItem = ({ marketCoin }) => {
     const priceImage = marketCoin?.price_change_percentage_24h > 0 ? 'caretup' : 'caretdown'
 
     return (
-        <View
+        <TouchableOpacity
             style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -31,6 +33,7 @@ const CoinItem = ({ marketCoin }) => {
                 borderBottomColor: '#282828',
                 paddingVertical: 10
             }}
+            onPress={() => navigation.navigate("Detail", { coinId: marketCoin.id })}
         >
             <View
                 style={{
@@ -100,7 +103,7 @@ const CoinItem = ({ marketCoin }) => {
                 <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>${marketCoin?.current_price}</Text>
                 <Text style={{ color: 'grey', fontSize: 18 }}>MCap: {formatMarketCap(marketCoin?.market_cap)}</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     )
 }
 

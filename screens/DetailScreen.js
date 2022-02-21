@@ -1,12 +1,39 @@
-import { View, Text, Image, Dimensions, TextInput, KeyboardAvoidingView, Platform } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, Image, Dimensions, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import { Ionicons, EvilIcons, AntDesign } from '@expo/vector-icons';
-import coin from '../assets/data/crypto.json';
 import { ChartDot, ChartPath, ChartPathProvider, ChartYLabel } from '@rainbow-me/animated-charts';
-
-
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { getSingleCoinData, getSingleCoinMarketChart } from '../services/api';
 
 const DetailScreen = () => {
+
+    const [coin, setCoin] = useState(null);
+    const [chartData, setChartData] = useState(null);
+    const route = useRoute();
+    const { params: { coinId } } = route;
+    const navigation = useNavigation();
+
+    const [loading, setLoading] = useState(false);
+    const [value, setValue] = useState("1");
+    const [price, setPrice] = useState("");
+
+    const fetchCoinData = async () => {
+        setLoading(true);
+        const coinData = await getSingleCoinData(coinId);
+        const coinMarketChartData = await getSingleCoinMarketChart(coinId);
+        setCoin(coinData);
+        setChartData(coinMarketChartData);
+        setPrice(coinData?.market_data?.current_price?.usd.toString())
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        fetchCoinData()
+    }, [])
+
+    if (loading || !coin || !chartData) {
+        return <ActivityIndicator size="large" />
+    }
 
     const { image: { small },
         symbol,
@@ -15,18 +42,18 @@ const DetailScreen = () => {
             market_cap_rank,
             current_price,
             price_change_percentage_24h
-        },
-        prices
+        }
     }
         = coin;
 
-    const [value, setValue] = useState("1");
-    const [price, setPrice] = useState(current_price.usd.toString());
+    const { prices } = chartData;
+
+
 
     const formatCurrency = (value) => {
         "worklet";
         if (value === "") {
-            return `${current_price.usd.toFixed(2)} US $`
+            return `${current_price?.usd.toFixed(2)} US $`
         }
         return `${parseFloat(value).toFixed(2)} US $`
     }
@@ -34,12 +61,12 @@ const DetailScreen = () => {
     const handleChange = (value) => {
         "worklet";
         setValue(value);
-        setPrice(value * current_price.usd);
+        setPrice(value * current_price?.usd);
     }
 
     const priceColor = price_change_percentage_24h > 0 ? '#16c784' : '#ea3943'
     const priceImage = price_change_percentage_24h > 0 ? 'caretup' : 'caretdown'
-    const chartColor = current_price.usd > prices[0][1] ? "#16c784" : "#ea3943"
+    const chartColor = current_price?.usd > prices[0][1] ? "#16c784" : "#ea3943"
     const { width: SIZE } = Dimensions.get('window');
 
     function renderHeader() {
@@ -47,7 +74,18 @@ const DetailScreen = () => {
             <View
                 style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10 }}
             >
-                <Ionicons name="chevron-back-sharp" size={30} color="white" />
+                <TouchableOpacity
+                    style={{
+                        width: 30,
+                        height: 30,
+                        borderRadius: 15,
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Ionicons name="chevron-back-sharp" size={30} color="white" />
+                </TouchableOpacity>
                 <View
                     style={{
                         flexDirection: 'row',
@@ -59,7 +97,7 @@ const DetailScreen = () => {
                         resizeMode="contain"
                         style={{ width: 25, height: 25 }}
                     />
-                    <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', marginLeft: 5 }}>{symbol.toUpperCase()}</Text>
+                    <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', marginLeft: 5 }}>{symbol?.toUpperCase()}</Text>
                     <View
                         style={{
                             width: 20,
@@ -142,15 +180,16 @@ const DetailScreen = () => {
                             margin: 12,
                             borderBottomWidth: 1,
                             borderBottomColor: 'white',
-                            fontSize: 16
+                            fontSize: 16,
+                            textAlign: 'center'
                         }}
                         keyboardType='numbers-and-punctuation'
                         value={value}
                         onChangeText={handleChange}
                     />
-                    <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{symbol.toUpperCase()}</Text>
+                    <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold' }}>{symbol?.toUpperCase()}</Text>
                 </View>
-                <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold', marginHorizontal: 15 }}>=</Text>
+                <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold', marginHorizontal: 15 }}>=</Text>
                 <View
                     style={{
                         flexDirection: 'row',
@@ -166,11 +205,11 @@ const DetailScreen = () => {
                             margin: 12,
                             borderBottomWidth: 1,
                             borderBottomColor: 'white',
-                            fontSize: 20
+                            fontSize: 20,
                         }}>
                         {price}
                     </Text>
-                    <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>USD</Text>
+                    <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold' }}>USD</Text>
                 </View>
             </View>
         )
@@ -178,9 +217,9 @@ const DetailScreen = () => {
 
     return (
         <View
-            style={{ flex: 1, backgroundColor: '#121212', paddingTop: 20 }}
+            style={{ flex: 1, backgroundColor: '#121212', paddingTop: 30 }}
         >
-            <ChartPathProvider data={{ points: prices.map(([x, y]) => ({ x, y })), smoothingStrategy: 'bezier' }}>
+            <ChartPathProvider data={{ points: prices?.map(([x, y]) => ({ x, y })), smoothingStrategy: 'bezier' }}>
                 {renderHeader()}
                 {renderCoinInfo()}
                 <View>
