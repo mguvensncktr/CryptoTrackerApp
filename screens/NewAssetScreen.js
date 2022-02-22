@@ -6,6 +6,8 @@ import { useRecoilState } from 'recoil';
 import { allPortfolioBoughtAssetsInStorage } from '../atoms/PortfolioAssets';
 import { getAllCoins, getSingleCoinData } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import uuid from 'uuid/v4';
+
 
 const NewAssetScreen = () => {
 
@@ -50,6 +52,7 @@ const NewAssetScreen = () => {
     const onAddAsset = async () => {
         const newAsset = {
             id: selectedCoin.id,
+            unique_id: selectedCoin.id + uuid.v4(),
             name: selectedCoin.name,
             image: selectedCoin.image.small,
             ticker: selectedCoin.symbol.toUpperCase(),

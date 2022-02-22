@@ -87,7 +87,7 @@ const PortfolioScreen = () => {
         }
 
         async function onDeleteAsset(asset) {
-            const newAssets = storageAssets.filter((coin, index) => index !== asset.index);
+            const newAssets = storageAssets.filter((coin, index) => coin.unique_id !== asset.item.unique_id);
             const jsonValue = JSON.stringify(newAssets);
             await AsyncStorage.setItem('@portfolio_coins', jsonValue)
             setStorageAssets(newAssets);
