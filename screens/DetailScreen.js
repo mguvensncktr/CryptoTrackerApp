@@ -1,7 +1,7 @@
-import { View, Text, Image, Dimensions, TextInput, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useState, useEffect } from 'react'
+import { View, Text, Image, Dimensions, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { LineChart } from 'react-native-wagmi-charts';
 import { Ionicons, AntDesign, FontAwesome } from '@expo/vector-icons';
-import { ChartDot, ChartPath, ChartPathProvider, ChartYLabel } from '@rainbow-me/animated-charts';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getSingleCoinData, getSingleCoinMarketChart } from '../services/api';
 import { useWatchListContext } from '../context/WatchlistContext';
@@ -68,7 +68,7 @@ const DetailScreen = () => {
 
 
 
-    const formatCurrency = (value) => {
+    const formatCurrency = ({ value }) => {
         "worklet";
         if (value === "") {
             if (current_price.usd < 1) {
@@ -176,14 +176,14 @@ const DetailScreen = () => {
             >
                 <View>
                     <Text style={{ fontSize: 22, color: 'white' }}>{name}</Text>
-                    <ChartYLabel
-                        format={formatCurrency}
+                    <LineChart.PriceText
                         style={{
                             color: 'white',
                             fontWeight: 'bold',
                             fontSize: 24,
                             letterSpacing: 1
                         }}
+                        format={formatCurrency}
                     />
                 </View>
                 <View
@@ -266,7 +266,7 @@ const DetailScreen = () => {
         <View
             style={{ flex: 1, backgroundColor: '#121212', paddingTop: 30 }}
         >
-            <ChartPathProvider data={{ points: prices?.map(([x, y]) => ({ x, y })) }}>
+            <LineChart.Provider data={prices?.map(([timestamp, value]) => ({ timestamp, value }))}>
                 {renderHeader()}
                 {renderCoinInfo()}
                 <View
@@ -286,16 +286,12 @@ const DetailScreen = () => {
                     <Filters filterDay="365" filterText="1y" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
                     <Filters filterDay="max" filterText="All" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
                 </View>
-                <View>
-                    <ChartPath
-                        height={SIZE / 2}
-                        stroke={chartColor}
-                        width={SIZE}
-                    />
-                    <ChartDot style={{ backgroundColor: chartColor }} />
-                </View>
+                <LineChart height={SIZE / 2} width={SIZE}>
+                    <LineChart.Path color={chartColor} />
+                    <LineChart.CursorCrosshair color={chartColor} />
+                </LineChart>
                 {renderConverter()}
-            </ChartPathProvider>
+            </LineChart.Provider>
         </View>
     )
 }
