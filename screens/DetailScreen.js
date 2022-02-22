@@ -67,9 +67,9 @@ const DetailScreen = () => {
         setPrice(value * current_price?.usd);
     }
 
-    const priceColor = price_change_percentage_24h > 0 ? '#16c784' : '#ea3943'
+    const priceColor = price_change_percentage_24h > 0 ? '#16c784' : '#ea3943' || 'white';
     const priceImage = price_change_percentage_24h > 0 ? 'caretup' : 'caretdown'
-    const chartColor = current_price?.usd > prices[0][1] ? "#16c784" : "#ea3943"
+    const chartColor = current_price?.usd > prices[0][1] ? '#16c784' : '#ea3943' || 'white';
     const { width: SIZE } = Dimensions.get('window');
 
     const watchlistedCoin = () => {

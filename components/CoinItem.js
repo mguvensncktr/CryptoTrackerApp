@@ -19,8 +19,8 @@ const CoinItem = ({ marketCoin }) => {
         }
     }
 
-    const priceColor = marketCoin?.price_change_percentage_24h > 0 ? '#16c784' : '#ea3943'
-    const priceImage = marketCoin?.price_change_percentage_24h > 0 ? 'caretup' : 'caretdown'
+    const priceColor = marketCoin?.price_change_percentage_24h > 0 ? '#16c784' : '#ea3943' || 'white';
+    const priceImage = marketCoin?.price_change_percentage_24h > 0 ? 'caretup' : 'caretdown';
 
     return (
         <TouchableOpacity
@@ -90,7 +90,7 @@ const CoinItem = ({ marketCoin }) => {
                             }}
                         >
                             <AntDesign name={priceImage} size={14} color={priceColor} />
-                            <Text style={{ color: priceColor, fontSize: 14, marginLeft: 5 }}>{marketCoin.price_change_percentage_24h.toFixed(2)} %</Text>
+                            <Text style={{ color: priceColor, fontSize: 14, marginLeft: 5 }}>{marketCoin?.price_change_percentage_24h?.toFixed(2)} %</Text>
                         </View>
                     </View>
                 </View>
