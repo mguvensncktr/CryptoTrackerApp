@@ -8,7 +8,6 @@ import PortfolioAssetItem from '../components/PortfolioAssetItem';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-
 const PortfolioScreen = () => {
 
     const navigation = useNavigation();

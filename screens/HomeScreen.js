@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, View, RefreshControl } from 'react-native'
+import { FlatList, View, RefreshControl, Text } from 'react-native'
 import CoinItem from '../components/CoinItem';
 import { getAllMarketData } from '../services/api';
 
@@ -34,9 +34,11 @@ const HomeScreen = () => {
 
     return (
         <View style={{ flex: 1, backgroundColor: '#121212', paddingTop: 30 }}>
+            <Text style={{ color: 'white', fontSize: 22, fontWeight: 'bold', marginLeft: 10 }}>Cryptocurrencies</Text>
             <FlatList
                 data={coins}
                 renderItem={({ item }) => <CoinItem marketCoin={item} />}
+                keyExtractor={item => `${item.name}`}
                 onEndReached={() => fetchCoins((coins.length / 50) + 1)}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
