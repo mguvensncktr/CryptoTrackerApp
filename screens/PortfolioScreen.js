@@ -1,53 +1,15 @@
 import { View, Text, FlatList, Pressable, Image } from 'react-native'
-import React from 'react'
+import React, { Suspense } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
-const PortfolioAssetItem = () => {
-    return (
-        <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginHorizontal: 15,
-            paddingVertical: 10
-        }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Image
-                    source={{ uri: "" }}
-                    style={{
-                        height: 30,
-                        width: 30,
-                    }}
-                />
-                <View style={{ marginLeft: 10 }}>
-                    <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>Bitcoin</Text>
-                    <Text style={{ color: 'grey', fontWeight: '600' }}>BTC</Text>
-                </View>
-            </View>
-            <View>
-                <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>$4000</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <AntDesign
-                        name={"caretup"}
-                        size={12}
-                        color={'#16c784'}
-                        style={{ marginRight: 5 }}
-                    />
-                    <Text style={{ color: '#16c784', fontWeight: '600' }}>1.2%</Text>
-                </View>
-            </View>
-            <View style={{ alignItems: 'flex-end' }}>
-                <Text style={{ color: 'white' }}>$80000</Text>
-                <Text style={{ color: 'grey', fontWeight: '600' }}>2 BTC</Text>
-            </View>
-        </View>
-    )
-}
+import { useRecoilValue, useRecoilState } from 'recoil';
+import { allPortfolioAssets } from '../atoms/PortfolioAssets';
+import PortfolioAssetItem from '../components/PortfolioAssetItem';
 
 const PortfolioScreen = () => {
 
     const navigation = useNavigation();
+    const assets = useRecoilValue(allPortfolioAssets);
 
     function renderPortfolioAssets() {
 
@@ -112,7 +74,7 @@ const PortfolioScreen = () => {
         return (
             <>
                 <FlatList
-                    data={[{ id: 'bitcoin' }]}
+                    data={assets}
                     renderItem={({ item }) => <PortfolioAssetItem assetItem={item} />}
                     showsVerticalScrollIndicator={false}
                     ListHeaderComponent={renderHeader()}
