@@ -39,7 +39,7 @@ const PortfolioAssetItem = ({ assetItem }) => {
                         color={isChangePositive ? '#16c784' : '#ea3943'}
                         style={{ marginRight: 5 }}
                     />
-                    <Text style={{ color: isChangePositive ? '#16c784' : '#ea3943', fontWeight: '600' }}>{priceChangePercentage.toFixed(2)} %</Text>
+                    <Text style={{ color: isChangePositive ? '#16c784' : '#ea3943', fontWeight: '600' }}>{priceChangePercentage?.toFixed(2)} %</Text>
                 </View>
             </View>
             <View style={{ alignItems: 'flex-end' }}>

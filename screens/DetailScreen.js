@@ -5,6 +5,7 @@ import { ChartDot, ChartPath, ChartPathProvider, ChartYLabel } from '@rainbow-me
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getSingleCoinData, getSingleCoinMarketChart } from '../services/api';
 import { useWatchListContext } from '../context/WatchlistContext';
+import Filters from '../components/Filters';
 
 const DetailScreen = () => {
 
@@ -18,19 +19,24 @@ const DetailScreen = () => {
     const [loading, setLoading] = useState(false);
     const [value, setValue] = useState("1");
     const [price, setPrice] = useState("");
+    const [selectedFilter, setSelectedFilter] = useState("1");
 
     const fetchCoinData = async () => {
         setLoading(true);
         const coinData = await getSingleCoinData(coinId);
-        const coinMarketChartData = await getSingleCoinMarketChart(coinId);
         setCoin(coinData);
-        setChartData(coinMarketChartData);
         setPrice(coinData?.market_data?.current_price?.usd.toString())
         setLoading(false);
     }
 
+    const fetchMarketCoinData = async (selectedFilter) => {
+        const coinMarketChartData = await getSingleCoinMarketChart(coinId, selectedFilter);
+        setChartData(coinMarketChartData);
+    }
+
     useEffect(() => {
         fetchCoinData()
+        fetchMarketCoinData(1)
     }, [])
 
     if (loading || !coin || !chartData) {
@@ -80,6 +86,11 @@ const DetailScreen = () => {
         "worklet";
         setValue(value);
         setPrice(value * current_price?.usd);
+    }
+
+    const onSelectedFilter = (filter) => {
+        setSelectedFilter(filter);
+        fetchMarketCoinData(filter)
     }
 
     const priceColor = price_change_percentage_24h > 0 ? '#16c784' : '#ea3943' || 'white';
@@ -255,9 +266,26 @@ const DetailScreen = () => {
         <View
             style={{ flex: 1, backgroundColor: '#121212', paddingTop: 30 }}
         >
-            <ChartPathProvider data={{ points: prices?.map(([x, y]) => ({ x, y })), smoothingStrategy: 'bezier' }}>
+            <ChartPathProvider data={{ points: prices?.map(([x, y]) => ({ x, y })) }}>
                 {renderHeader()}
                 {renderCoinInfo()}
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-around',
+                        backgroundColor: '#2B2B2B',
+                        paddingVertical: 5,
+                        borderRadius: 5,
+                        marginVertical: 5
+                    }}
+                >
+                    <Filters filterDay="1" filterText="24h" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
+                    <Filters filterDay="7" filterText="7d" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
+                    <Filters filterDay="30" filterText="30d" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
+                    <Filters filterDay="365" filterText="1y" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
+                    <Filters filterDay="max" filterText="All" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
+                </View>
                 <View>
                     <ChartPath
                         height={SIZE / 2}
