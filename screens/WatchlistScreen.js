@@ -22,7 +22,9 @@ const WatchlistScreen = () => {
     }
 
     useEffect(() => {
-        fetchWatchListedCoins();
+        if (watchListCoinId.length > 0) {
+            fetchWatchListedCoins();
+        }
     }, [watchListCoinId])
 
     return (

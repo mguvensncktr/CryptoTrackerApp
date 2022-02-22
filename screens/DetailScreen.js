@@ -1,4 +1,4 @@
-import { View, Text, Image, Dimensions, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { View, Text, Image, Dimensions, TextInput, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { Ionicons, AntDesign, FontAwesome } from '@expo/vector-icons';
 import { ChartDot, ChartPath, ChartPathProvider, ChartYLabel } from '@rainbow-me/animated-charts';
@@ -34,7 +34,16 @@ const DetailScreen = () => {
     }, [])
 
     if (loading || !coin || !chartData) {
-        return <ActivityIndicator size="large" />
+        return <View
+            style={{
+                flex: 1,
+                backgroundColor: '#121212',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}
+        >
+            <ActivityIndicator size="large" color="#16c784" />
+        </View>
     }
 
     const { image: { small },
@@ -56,7 +65,13 @@ const DetailScreen = () => {
     const formatCurrency = (value) => {
         "worklet";
         if (value === "") {
+            if (current_price.usd < 1) {
+                return `$${current_price.usd}`
+            }
             return `${current_price?.usd.toFixed(2)} US $`
+        }
+        if (current_price.usd < 1) {
+            return `$${parseFloat(value).toFixed(8)}`
         }
         return `${parseFloat(value).toFixed(2)} US $`
     }
