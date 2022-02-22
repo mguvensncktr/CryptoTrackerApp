@@ -48,6 +48,17 @@ const DetailScreen = () => {
         fetchCandleStickChartData();
     }, [])
 
+    const onSelectedFilter = (filter) => {
+        setSelectedFilter(filter);
+        fetchMarketCoinData(filter)
+        fetchCandleStickChartData(filter)
+    }
+
+    const memoSelectedFilter = React.useCallback(
+        (filter) => onSelectedFilter(filter),
+        []
+    )
+
     if (loading || !coin || !chartData || !candleData) {
         return <View
             style={{
@@ -95,12 +106,6 @@ const DetailScreen = () => {
         "worklet";
         setValue(value);
         setPrice(value * current_price?.usd);
-    }
-
-    const onSelectedFilter = (filter) => {
-        setSelectedFilter(filter);
-        fetchMarketCoinData(filter)
-        fetchCandleStickChartData(filter)
     }
 
     const priceColor = price_change_percentage_24h > 0 ? '#16c784' : '#ea3943' || 'white';
@@ -290,11 +295,11 @@ const DetailScreen = () => {
                         marginVertical: 5
                     }}
                 >
-                    <Filters filterDay="1" filterText="24h" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
-                    <Filters filterDay="7" filterText="7d" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
-                    <Filters filterDay="30" filterText="30d" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
-                    <Filters filterDay="365" filterText="1y" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
-                    <Filters filterDay="max" filterText="All" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
+                    <Filters filterDay="1" filterText="24h" selectedFilter={selectedFilter} setSelectedFilter={memoSelectedFilter} />
+                    <Filters filterDay="7" filterText="7d" selectedFilter={selectedFilter} setSelectedFilter={memoSelectedFilter} />
+                    <Filters filterDay="30" filterText="30d" selectedFilter={selectedFilter} setSelectedFilter={memoSelectedFilter} />
+                    <Filters filterDay="365" filterText="1y" selectedFilter={selectedFilter} setSelectedFilter={memoSelectedFilter} />
+                    <Filters filterDay="max" filterText="All" selectedFilter={selectedFilter} setSelectedFilter={memoSelectedFilter} />
                     {
                         chartVisible ?
                             (

@@ -44,7 +44,7 @@ const HomeScreen = () => {
                 refreshControl={
                     <RefreshControl
                         refreshing={loading}
-                        tintColor="white"
+                        tintColor="#16c784"
                         onRefresh={refetchCoins}
                     />
                 }
