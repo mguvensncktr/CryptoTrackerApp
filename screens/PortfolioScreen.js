@@ -2,7 +2,7 @@ import { View, Text, FlatList, Pressable, Image } from 'react-native'
 import React, { Suspense } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { allPortfolioAssets } from '../atoms/PortfolioAssets';
 import PortfolioAssetItem from '../components/PortfolioAssetItem';
 
@@ -10,6 +10,17 @@ const PortfolioScreen = () => {
 
     const navigation = useNavigation();
     const assets = useRecoilValue(allPortfolioAssets);
+
+    const currentBalance = assets.reduce((a, b) => a + (b.currentPrice * b.quantity), 0).toFixed(2);
+    const valueChange = () => {
+        const boughtBalance = assets.reduce((total, currentAsset) => total + (currentAsset.price * currentAsset.quantity), 0);
+        return (currentBalance - boughtBalance).toFixed(2);
+    }
+
+    const currentPercentageChange = () => {
+        const boughtBalance = assets.reduce((total, currentAsset) => total + (currentAsset.price * currentAsset.quantity), 0);
+        return ((currentBalance - boughtBalance) / boughtBalance * 100).toFixed(2) || 0;
+    }
 
     function renderPortfolioAssets() {
 
@@ -25,26 +36,30 @@ const PortfolioScreen = () => {
                         }}>
                         <View>
                             <Text style={{ color: 'white', fontWeight: '600', fontSize: 18 }}>Current Balance</Text>
-                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 40, letterSpacing: 1 }}>$20000</Text>
-                            <Text style={{ color: '#16c784', fontWeight: '600', fontSize: 16 }}>$1000 (All Time)</Text>
+                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: currentBalance.length > 10 ? 20 : 35, letterSpacing: 1 }}>${currentBalance}</Text>
+                            <Text style={{ color: valueChange() > 0 ? '#16c784' : '#ea3943', fontWeight: '600', fontSize: 16 }}>${valueChange()} (All Time)</Text>
                         </View>
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                backgroundColor: '#16c784',
-                                paddingHorizontal: 5,
-                                paddingVertical: 6,
-                                borderRadius: 5
-                            }}>
-                            <AntDesign
-                                name={"caretup"}
-                                size={12}
-                                color={"white"}
-                                style={{ marginRight: 5 }}
-                            />
-                            <Text style={{ color: 'white', fontWeight: '500', fontSize: 17 }}>1.2%</Text>
-                        </View>
+                        {
+                            currentPercentageChange() > 0 ?
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        backgroundColor: valueChange() > 0 ? '#16c784' : '#ea3943',
+                                        paddingHorizontal: 5,
+                                        paddingVertical: 6,
+                                        borderRadius: 5
+                                    }}>
+                                    <AntDesign
+                                        name={valueChange() > 0 ? "caretup" : "caretdown"}
+                                        size={12}
+                                        color={"white"}
+                                        style={{ marginRight: 5 }}
+                                    />
+                                    <Text style={{ color: 'white', fontWeight: '500', fontSize: 17 }}>{currentPercentageChange()} %</Text>
+                                </View>
+                                : null
+                        }
                     </View>
                     <View style={{ margin: 15 }}>
                         <Text style={{ color: 'white', fontWeight: '700', fontSize: 23 }}>Your Assets</Text>
