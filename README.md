@@ -15,5 +15,42 @@ Users can add cryptocurrencies into their portfolio and watchlist
 
 ### Screenshots:
 
+<table>
+  <tr>
+    <td>Home Screen</td>
+     <td>Portfolio Screen</td>
+     <td>Add new asset screen</td>
+  </tr>
+  
+  <tr>
+    <td><img src="screenshots/1.JPG" width=270 height=480></td>
+    <td><img src="screenshots/2.JPG" width=270 height=480></td>
+    <td><img src="screenshots/3.JPG" width=270 height=480></td>
+  </tr>
+ </table>
 
-
+<table>
+  <tr>
+    <td>Watchlist Screen</td>
+     <td>Detail Screen Candle Chart</td>
+     <td>Detail Screen Candle Chart with Info</td>
+  </tr>
+  
+  <tr>
+    <td><img src="screenshots/4.JPG" width=270 height=480></td>
+    <td><img src="screenshots/5.JPG" width=270 height=480></td>
+    <td><img src="screenshots/6.JPG" width=270 height=480></td>
+  </tr>
+ </table>
+ 
+ <table>
+  <tr>
+    <td>Detail Screen Line Chart</td>
+     <td>Portfolio Screen Delete</td>
+  </tr>
+  
+  <tr>
+    <td><img src="screenshots/7.JPG" width=270 height=480></td>
+    <td><img src="screenshots/8.JPG" width=270 height=480></td>
+  </tr>
+ </table>
