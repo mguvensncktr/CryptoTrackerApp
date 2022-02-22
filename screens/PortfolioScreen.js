@@ -40,7 +40,7 @@ const PortfolioScreen = () => {
                             <Text style={{ color: valueChange() > 0 ? '#16c784' : '#ea3943', fontWeight: '600', fontSize: 16 }}>${valueChange()} (All Time)</Text>
                         </View>
                         {
-                            currentPercentageChange() > 0 ?
+                            currentPercentageChange() ?
                                 <View
                                     style={{
                                         flexDirection: 'row',
