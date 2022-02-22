@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, Image, Dimensions, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { LineChart } from 'react-native-wagmi-charts';
-import { Ionicons, AntDesign, FontAwesome } from '@expo/vector-icons';
+import { Ionicons, AntDesign, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { getSingleCoinData, getSingleCoinMarketChart } from '../services/api';
+import { getSingleCoinData, getSingleCoinMarketChart, getCandleChartData } from '../services/api';
 import { useWatchListContext } from '../context/WatchlistContext';
 import Filters from '../components/Filters';
+import { CandlestickChart } from 'react-native-wagmi-charts';
 
 const DetailScreen = () => {
 
     const { watchListCoinId, addCoinToWatchList, removeCoinFromWatchList } = useWatchListContext();
     const [coin, setCoin] = useState(null);
     const [chartData, setChartData] = useState(null);
+    const [candleData, setCandleData] = useState(null);
     const route = useRoute();
     const { params: { coinId } } = route;
     const navigation = useNavigation();
@@ -20,6 +22,7 @@ const DetailScreen = () => {
     const [value, setValue] = useState("1");
     const [price, setPrice] = useState("");
     const [selectedFilter, setSelectedFilter] = useState("1");
+    const [chartVisible, setChartVisible] = useState(false);
 
     const fetchCoinData = async () => {
         setLoading(true);
@@ -34,12 +37,18 @@ const DetailScreen = () => {
         setChartData(coinMarketChartData);
     }
 
+    const fetchCandleStickChartData = async (selectedFilter) => {
+        const fetchedCandleStickData = await getCandleChartData(coinId, selectedFilter);
+        setCandleData(fetchedCandleStickData);
+    }
+
     useEffect(() => {
         fetchCoinData()
         fetchMarketCoinData(1)
+        fetchCandleStickChartData();
     }, [])
 
-    if (loading || !coin || !chartData) {
+    if (loading || !coin || !chartData || !candleData) {
         return <View
             style={{
                 flex: 1,
@@ -91,6 +100,7 @@ const DetailScreen = () => {
     const onSelectedFilter = (filter) => {
         setSelectedFilter(filter);
         fetchMarketCoinData(filter)
+        fetchCandleStickChartData(filter)
     }
 
     const priceColor = price_change_percentage_24h > 0 ? '#16c784' : '#ea3943' || 'white';
@@ -285,11 +295,65 @@ const DetailScreen = () => {
                     <Filters filterDay="30" filterText="30d" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
                     <Filters filterDay="365" filterText="1y" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
                     <Filters filterDay="max" filterText="All" selectedFilter={selectedFilter} setSelectedFilter={onSelectedFilter} />
+                    {
+                        chartVisible ?
+                            (
+                                <MaterialIcons name="waterfall-chart" size={24} color="#16c784" onPress={() => setChartVisible(!chartVisible)} />
+                            ) :
+                            (
+                                <MaterialIcons name="show-chart" size={24} color="#16c784" onPress={() => setChartVisible(!chartVisible)} />
+                            )
+                    }
                 </View>
-                <LineChart height={SIZE / 2} width={SIZE}>
-                    <LineChart.Path color={chartColor} />
-                    <LineChart.CursorCrosshair color={chartColor} />
-                </LineChart>
+                {
+                    chartVisible ?
+                        (
+                            <LineChart height={SIZE / 2} width={SIZE}>
+                                <LineChart.Path color={chartColor} />
+                                <LineChart.CursorCrosshair color={chartColor} />
+                            </LineChart>
+                        ) :
+                        (
+                            <CandlestickChart.Provider data={candleData.map(([timestamp, open, high, low, close]) => ({
+                                timestamp, open, high, low, close
+                            }))}>
+                                <CandlestickChart height={SIZE / 2} width={SIZE}>
+                                    <CandlestickChart.Candles />
+                                    <CandlestickChart.Crosshair>
+                                        <CandlestickChart.Tooltip />
+                                    </CandlestickChart.Crosshair>
+                                </CandlestickChart>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10, marginTop: 15 }}>
+                                    <View>
+                                        <Text style={{ color: 'white' }}>Open</Text>
+                                        <CandlestickChart.PriceText type="open" style={{ color: 'white', fontWeight: '700' }} />
+                                    </View>
+
+                                    <View>
+                                        <Text style={{ color: 'white' }}>Highest</Text>
+                                        <CandlestickChart.PriceText type="high" style={{ color: 'white', fontWeight: '700' }} />
+                                    </View>
+
+                                    <View>
+                                        <Text style={{ color: 'white' }}>Lowest</Text>
+                                        <CandlestickChart.PriceText type="low" style={{ color: 'white', fontWeight: '700' }} />
+                                    </View>
+
+                                    <View>
+                                        <Text style={{ color: 'white' }}>Close</Text>
+                                        <CandlestickChart.PriceText type="close" style={{ color: 'white', fontWeight: '700' }} />
+                                    </View>
+                                </View>
+                                <View style={{ flexDirection: 'row', marginHorizontal: 10, marginTop: 5, alignItems: 'center' }}>
+                                    <Text style={{ color: 'white' }}>Time</Text>
+                                    <CandlestickChart.DatetimeText style={{ color: 'white', fontWeight: '700', margin: 5 }} />
+                                </View>
+                            </CandlestickChart.Provider>
+                        )
+                }
+
+
+
                 {renderConverter()}
             </LineChart.Provider>
         </View>
