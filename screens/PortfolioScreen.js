@@ -1,7 +1,7 @@
 import { View, Text, FlatList, Pressable, Image } from 'react-native'
 import React from 'react'
 import { AntDesign } from '@expo/vector-icons';
-
+import { useNavigation } from '@react-navigation/native';
 
 const PortfolioAssetItem = () => {
     return (
@@ -46,6 +46,8 @@ const PortfolioAssetItem = () => {
 }
 
 const PortfolioScreen = () => {
+
+    const navigation = useNavigation();
 
     function renderPortfolioAssets() {
 
@@ -100,6 +102,7 @@ const PortfolioScreen = () => {
                         marginVertical: 25,
                         marginHorizontal: 20,
                     }}
+                    onPress={() => navigation.navigate('Assets')}
                 >
                     <Text style={{ color: 'white', fontSize: 17, fontWeight: '600' }}>Add new Asset</Text>
                 </Pressable>
