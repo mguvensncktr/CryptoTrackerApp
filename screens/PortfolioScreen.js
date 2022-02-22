@@ -1,15 +1,19 @@
-import { View, Text, FlatList, Pressable, Image } from 'react-native'
-import React, { Suspense } from 'react'
-import { AntDesign } from '@expo/vector-icons';
+import { View, Text, Pressable } from 'react-native'
+import React from 'react'
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useRecoilValue } from 'recoil';
-import { allPortfolioAssets } from '../atoms/PortfolioAssets';
+import { useRecoilValue, useRecoilState } from 'recoil';
+import { allPortfolioAssets, allPortfolioBoughtAssetsInStorage } from '../atoms/PortfolioAssets';
 import PortfolioAssetItem from '../components/PortfolioAssetItem';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 
 const PortfolioScreen = () => {
 
     const navigation = useNavigation();
     const assets = useRecoilValue(allPortfolioAssets);
+    const [storageAssets, setStorageAssets] = useRecoilState(allPortfolioBoughtAssetsInStorage);
 
     const currentBalance = assets.reduce((a, b) => a + (b.currentPrice * b.quantity), 0).toFixed(2);
     const valueChange = () => {
@@ -39,27 +43,23 @@ const PortfolioScreen = () => {
                             <Text style={{ color: 'white', fontWeight: 'bold', fontSize: currentBalance.length > 10 ? 20 : 35, letterSpacing: 1 }}>${currentBalance}</Text>
                             <Text style={{ color: valueChange() > 0 ? '#16c784' : '#ea3943', fontWeight: '600', fontSize: 16 }}>${valueChange()} (All Time)</Text>
                         </View>
-                        {
-                            currentPercentageChange() ?
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        backgroundColor: valueChange() > 0 ? '#16c784' : '#ea3943',
-                                        paddingHorizontal: 5,
-                                        paddingVertical: 6,
-                                        borderRadius: 5
-                                    }}>
-                                    <AntDesign
-                                        name={valueChange() > 0 ? "caretup" : "caretdown"}
-                                        size={12}
-                                        color={"white"}
-                                        style={{ marginRight: 5 }}
-                                    />
-                                    <Text style={{ color: 'white', fontWeight: '500', fontSize: 17 }}>{currentPercentageChange()} %</Text>
-                                </View>
-                                : null
-                        }
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                backgroundColor: valueChange() > 0 ? '#16c784' : '#ea3943',
+                                paddingHorizontal: 5,
+                                paddingVertical: 6,
+                                borderRadius: 5
+                            }}>
+                            <AntDesign
+                                name={valueChange() > 0 ? "caretup" : "caretdown"}
+                                size={12}
+                                color={"white"}
+                                style={{ marginRight: 5 }}
+                            />
+                            <Text style={{ color: 'white', fontWeight: '500', fontSize: 17 }}>{currentPercentageChange()} %</Text>
+                        </View>
                     </View>
                     <View style={{ margin: 15 }}>
                         <Text style={{ color: 'white', fontWeight: '700', fontSize: 23 }}>Your Assets</Text>
@@ -86,11 +86,42 @@ const PortfolioScreen = () => {
             )
         }
 
+        async function onDeleteAsset(asset) {
+            const newAssets = storageAssets.filter((coin, index) => index !== asset.index);
+            const jsonValue = JSON.stringify(newAssets);
+            await AsyncStorage.setItem('@portfolio_coins', jsonValue)
+            setStorageAssets(newAssets);
+        }
+
+        function renderDeleteButton(data) {
+            return (
+                <Pressable
+                    style={{
+                        flex: 1,
+                        backgroundColor: '#EA3943',
+                        alignItems: 'flex-end',
+                        justifyContent: 'center',
+                        paddingRight: 30,
+                        marginLeft: 20
+                    }}
+                    onPress={() => onDeleteAsset(data)}
+                >
+                    <FontAwesome name="trash-o" size={24} color="white" />
+                </Pressable>
+            )
+        }
+
         return (
             <>
-                <FlatList
+                <SwipeListView
                     data={assets}
                     renderItem={({ item }) => <PortfolioAssetItem assetItem={item} />}
+                    rightOpenValue={-80}
+                    disableRightSwipe={true}
+                    closeOnRowBeginSwipe={true}
+                    closeOnRowPress={true}
+                    keyExtractor={({ id }, index) => `${id}${index}`}
+                    renderHiddenItem={(data) => renderDeleteButton(data)}
                     showsVerticalScrollIndicator={false}
                     ListHeaderComponent={renderHeader()}
                     ListFooterComponent={renderFooter()}

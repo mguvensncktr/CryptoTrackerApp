@@ -14,8 +14,9 @@ const PortfolioAssetItem = ({ assetItem }) => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginHorizontal: 15,
-            paddingVertical: 10
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            backgroundColor: '#121212',
         }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image
